@@ -27,7 +27,7 @@ namespace IIProjectService
         //    </paginering>
         //</förfrågan>
 
-        public void HämtaFordonsPassager(XElement förfrågan)
+        public XElement HämtaFordonsPassager(XElement förfrågan)
         {
             string fromIncl = förfrågan.Element("tidsintervall").Element("start").Value;
             DateTime from = DateTime.Parse(fromIncl);
@@ -36,6 +36,7 @@ namespace IIProjectService
             DateTime to = DateTime.Parse(toIncl);
 
             string plats = förfrågan.Element("plats").Value;
+            return new XElement("Hj") { };
         }
 
         private XElement GetEvents(DateTime fromIncl, DateTime toIncl, string platsEPC)
