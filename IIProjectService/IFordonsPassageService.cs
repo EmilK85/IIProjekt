@@ -18,7 +18,7 @@ namespace IIProjectService
         string HämtaFordonsPassager(XElement förfrågan);
 
         string hej;
-        int HEJDÅ; 
+        string hejdå; 
 
         // TODO: Add your service operations here
 
