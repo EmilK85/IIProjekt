@@ -15,7 +15,7 @@ namespace IIProjectService
     {
 
         [OperationContract]
-        XElement HämtaFordonsPassager(XElement förfrågan);
+        string HämtaFordonsPassager(XElement förfrågan);
 
         string hej;
         string hejdå;
