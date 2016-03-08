@@ -47,6 +47,14 @@ namespace IIProjectService
 
         }
 
+        private XElement GetVehicle(string vehicleEPC)
+        {
+            IIServiceReference.NamingServiceClient master = new IIServiceReference.NamingServiceClient();
+            XElement vehicle = master.GetVehicle(vehicleEPC);
+            return vehicle;
+            master.Close();
+        }
+
     }
 }
 
