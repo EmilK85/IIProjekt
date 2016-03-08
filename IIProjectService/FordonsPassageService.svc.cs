@@ -36,7 +36,8 @@ namespace IIProjectService
             DateTime to = DateTime.Parse(toIncl);
 
             string plats = förfrågan.Element("plats").Value;
-            return new XElement("Hj") { };
+            XElement fordonsPassage = new XElement("HEj");
+            return fordonsPassage;
         }
 
         private XElement GetEvents(DateTime fromIncl, DateTime toIncl, string platsEPC)
