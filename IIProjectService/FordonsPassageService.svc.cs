@@ -5,6 +5,7 @@ using System.Runtime.Serialization;
 using System.ServiceModel;
 using System.ServiceModel.Web;
 using System.Text;
+using System.Xml.Linq;
 
 namespace IIProjectService
 {
@@ -12,22 +13,41 @@ namespace IIProjectService
     // NOTE: In order to launch WCF Test Client for testing this service, please select Service1.svc or Service1.svc.cs at the Solution Explorer and start debugging.
     public class FordonsPassageService : IFordonsPassageService
     {
-        public string GetData(int value)
+        //<förfrågan>
+        //    <datetimeFörfrågan></datetimeFörfrågan>
+        //    <anropsansvarig></anropsansvarig>
+        //    <tidsintervall>
+        //        <start></start>
+        //        <slut></slut>
+        //    </tidsintervall>
+        //    <plats></plats>
+        //    <paginering>
+        //        <antal></antal>
+        //        <senastTagna></senastTagna>
+        //    </paginering>
+        //</förfrågan>
+
+        public void HämtaFordonsPassager(XElement förfrågan)
         {
-            return string.Format("You entered: {0}", value);
+            string fromIncl = förfrågan.Element("tidsintervall").Element("start").Value;
+            DateTime from = DateTime.Parse(fromIncl);
+
+            string toIncl = förfrågan.Element("tidsintervall").Element("slut").Value;
+            DateTime to = DateTime.Parse(toIncl);
+
+            string plats = förfrågan.Element("plats").Value;
         }
 
-        public CompositeType GetDataUsingDataContract(CompositeType composite)
+        private XElement GetEvents(DateTime fromIncl, DateTime toIncl, string platsEPC)
         {
-            if (composite == null)
-            {
-                throw new ArgumentNullException("composite");
-            }
-            if (composite.BoolValue)
-            {
-                composite.StringValue += "Suffix";
-            }
-            return composite;
+            IIServiceReference.EpcisEventServiceClient epcis = new IIServiceReference.EpcisEventServiceClient();
+            XElement events = new XElement("Events", epcis.GetEvents(fromIncl, toIncl, platsEPC));
+            epcis.Close();
+            return events;
+
         }
+
     }
 }
+
+
