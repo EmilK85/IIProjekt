@@ -4,6 +4,7 @@ using System.Linq;
 using System.Web;
 using System.Web.Mvc;
 using IIProjectClient.FordonsPassageServiceReference;
+using System.Xml.Linq;
 namespace IIProjectClient.Controllers
 {
     public class TestController : Controller
@@ -30,12 +31,12 @@ namespace IIProjectClient.Controllers
             FordonsPassageServiceClient client = new FordonsPassageServiceClient();
             XElement förfrågan = new XElement("Förfrågan",
                 new XElement("tidsintervall",
-                    new XElement("start",  ),
-                    new XElement("slut", )
+                    new XElement("start", DateTime.Parse("2011-03-25")),
+                    new XElement("slut", DateTime.Parse("2011-09-25"))
                 ),
                 new XElement("plats", "urn:epc:id:sgln:735999271.000.13")
-                
-                )
+
+                );
             XElement svar = client.HämtaFordonsPassager(förfrågan);
             return View();
         }
