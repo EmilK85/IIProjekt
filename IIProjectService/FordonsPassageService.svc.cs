@@ -32,10 +32,12 @@ namespace IIProjectService
             string fromIncl = förfrågan.Element("tidsintervall").Element("start").Value;
             DateTime from = DateTime.Parse(fromIncl);
 
-            string toIncl = förfrågan.Element("tidsintervall").Element("slut").Value;
+            string toIncl = förfrågan.Element("tidsintervall").Element("sluttid").Value;
             DateTime to = DateTime.Parse(toIncl);
 
             string plats = förfrågan.Element("plats").Value;
+            string testString = "test";
+            XElement events = GetEvents(from, to, plats);
             XElement fordonsPassage = new XElement("HEj");
             return fordonsPassage;
         }
