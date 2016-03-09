@@ -30,10 +30,11 @@ namespace IIProjectClient.Controllers
 //</förfrågan>
             FordonsPassageServiceClient client = new FordonsPassageServiceClient();
             XElement förfrågan = new XElement("förfrågan",
+                new XElement("anropsansvarig", "Olle"),
                 new XElement("tidsintervall",
-                    new XElement("start", DateTime.Parse("2011-03-25")),
-                    new XElement("slut", DateTime.Parse("2011-04-02"))),
-                new XElement("plats", "urn:epc:id:sgln:735999271.000.13"),
+                    new XElement("start", DateTime.Parse("2011-03-25").ToString()),
+                    new XElement("slut", DateTime.Parse("2011-04-10").ToString())),
+                new XElement("plats", "urn:epc:id:sgln:735999271.000.9"),
                 new XElement("paginering",
                     new XElement("antal", "randomNummer"),
                     new XElement("senastTagna", "randomNummer")));

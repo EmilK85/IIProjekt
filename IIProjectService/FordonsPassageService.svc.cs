@@ -31,13 +31,13 @@ namespace IIProjectService
         {
             string fromIncl = förfrågan.Element("tidsintervall").Element("start").Value;
             DateTime from = DateTime.Parse(fromIncl);
-
-            string toIncl = förfrågan.Element("tidsintervall").Element("sluttid").Value;
+            string toIncl = förfrågan.Element("tidsintervall").Element("slut").Value;
             DateTime to = DateTime.Parse(toIncl);
 
-            string plats = förfrågan.Element("plats").Value;
+            string platsEPC = förfrågan.Element("plats").Value;
+            string plats = GetLocation((string)förfrågan.Element("plats")).Element("Location").Element("Name").Value;
 
-            XElement events = GetEvents(from, to, plats);
+            XElement events = GetEvents(from, to, platsEPC);
            
             /* SVARET
              * 
@@ -75,22 +75,26 @@ namespace IIProjectService
                         new XElement("Svarskod", "tillfällig kod"),
                         new XElement("Meddelande", "tillfälligt meddelande"),
                         new XElement("Tjänsteansvarig", "Grymma gruppen AB"),
-                        new XElement("Applikationsnamn och version", "Grymma appen, Ver 1.0"),
-                        new XElement("Tidpunkt för svaret", DateTime.Now)),
+                        new XElement("Applikationsnamn", "Grymma appen, Ver 1.0"),
+                        new XElement("Tidpunkt", DateTime.Now)),
                     new XElement("Anropsinformation",
                         new XElement("Anropsansvarig", förfrågan.Element("anropsansvarig").Value),
-                        new XElement("Argument som skickades med anropet", "insert argument från föfrågan"))),
-                    from evnt in events.Elements("EventList")
+                        new XElement("Argument", "insert argument från föfrågan"))),
+                    from evnt in events.Descendants("ObjectEvent")
                     select new XElement("FordonsPassager",
-                        new XElement("Fordonets epc", evnt.Element("epc").Value),
-                        new XElement("Platsens EPC", evnt.Element("id").Value),
-                        new XElement("Tid", evnt.Element("eventTime").Value),
-                        new XElement("Plats", förfrågan.Element("plats").Value),
-                        new XElement("EVN", GetVehicle((string)evnt.Element("epc")).Element("Fordonsnummer")),
-                        new XElement("Fordonsinnehavaren", GetVehicle((string)evnt.Element("epc")).Element("Fordonsinnehavare").Element("Foretag").Value),
-                        new XElement("Underhållsansvarigt företag", GetVehicle((string)evnt.Element("epc")).Element("UnderhallsansvarigtForetag").Element("Foretag").Value),
-                        new XElement("Fordonstyp", GetVehicle((string)evnt.Element("epc")).ElementsAfterSelf("FordonsTyp")),
-                        new XElement("Giltigt godkännande", "query under Godkannande (finns massa tänkta attribut, antingen FordonsgodkannandeFullVardeSE eller intervall")));
+                        new XElement("FordonEpc", (string)evnt.Element("epcList").Element("epc")),
+                        new XElement("PlatsEPC", (string)evnt.Element("readPoint").Element("id")),
+                        new XElement("Tid", (string)evnt.Element("eventTime")),
+                        new XElement("Plats", plats),
+                        from vehicle in GetVehicle((string)evnt.Element("epcList").Element("epc")).Descendants("Fordonsindivider")
+                        select  new XElement("FordonsData",
+                            new XElement("EVN", (string)vehicle.Element("FordonsIndivid").Element("Fordonsnummer")),
+                            new XElement("Fordonsinnehavaren", (string)vehicle.Element("FordonsIndivid").Element("Fordonsinnehavare").Element("Foretag")),
+                            new XElement("UnderhållsansvarigtFöretag", (string)vehicle.Element("FordonsIndivid").Element("UnderhallsansvarigtForetag").Element("Foretag")),
+                            new XElement("Fordonstyp", 
+                                from vehic in GetVehicle((string)evnt.Element("epcList").Element("epc")).Descendants("FordonsTyp")
+                                select (string)vehic.Element("FordonskategoriKodFullVardeSE")),
+                            new XElement("GiltigtGodkännande", "query under Godkannande (finns massa tänkta attribut, antingen FordonsgodkannandeFullVardeSE eller intervall"))));
 
             return svar;
         }
@@ -99,6 +103,7 @@ namespace IIProjectService
         {
             IIServiceReference.EpcisEventServiceClient epcis = new IIServiceReference.EpcisEventServiceClient();
             XElement events = new XElement("Events", epcis.GetEvents(fromIncl, toIncl, platsEPC));
+            
             epcis.Close();
             return events;
 
@@ -113,5 +118,12 @@ namespace IIProjectService
 
         }
 
+        private XElement GetLocation(string vehicleEPC)
+        {
+            IIServiceReference.NamingServiceClient master = new IIServiceReference.NamingServiceClient();
+            XElement location = master.GetLocation(vehicleEPC);
+            master.Close();
+            return location;
+        }
     }
 }
