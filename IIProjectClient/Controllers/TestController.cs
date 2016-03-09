@@ -29,16 +29,16 @@ namespace IIProjectClient.Controllers
 //    </paginering>
 //</förfrågan>
             FordonsPassageServiceClient client = new FordonsPassageServiceClient();
-            XElement förfrågan = new XElement("Förfrågan",
+            XElement förfrågan = new XElement("förfrågan",
                 new XElement("tidsintervall",
                     new XElement("start", DateTime.Parse("2011-03-25")),
-                    new XElement("slut", DateTime.Parse("2011-04-02"))
-                ),
-                new XElement("plats", "urn:epc:id:sgln:735999271.000.13")
-
-                );
+                    new XElement("slut", DateTime.Parse("2011-04-02"))),
+                new XElement("plats", "urn:epc:id:sgln:735999271.000.13"),
+                new XElement("paginering",
+                    new XElement("antal", "randomNummer"),
+                    new XElement("senastTagna", "randomNummer")));
             XElement svar = client.HämtaFordonsPassager(förfrågan);
-            return View();
+            return View(svar);
         }
     }
 }

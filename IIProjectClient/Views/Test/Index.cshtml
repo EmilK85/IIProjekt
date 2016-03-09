@@ -1,0 +1,48 @@
+﻿@using System.Xml.Linq
+@model XElement
+
+@{
+    ViewBag.Title = "Index";
+}
+
+<h2>Index</h2>
+
+<table>
+    <thead>
+        <tr>
+            <th>
+                Svarskod
+            </th>
+            <th>
+                Anropsansvarig
+            </th>
+            <th>
+                Plats
+            </th>
+            <th>
+                EVN
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+
+        @foreach (var item in Model.Elements("Svar"))
+        {
+            <tr>
+                <td>
+                    @((string)item.Element("Svarskod"))
+                </td>
+                <td>
+                    @((string)item.Element("Anropsansvarig"))
+                </td>
+                <td>
+                    @((string)item.Element("Plats"))
+                </td>
+                <td>
+                    @((string)item.Element("EVN"))
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
