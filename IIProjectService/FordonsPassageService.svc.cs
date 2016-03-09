@@ -36,14 +36,27 @@ namespace IIProjectService
             DateTime to = DateTime.Parse(toIncl);
 
             string plats = förfrågan.Element("plats").Value;
-            XElement fordonsPassage = new XElement("HEj");
-            return fordonsPassage;
+            //XElement fordonsPassage = new XElement("HEj");
+            //return fordonsPassage;
+            return GetEvents(from, to, plats);
         }
 
         private XElement GetEvents(DateTime fromIncl, DateTime toIncl, string platsEPC)
         {
             IIServiceReference.EpcisEventServiceClient epcis = new IIServiceReference.EpcisEventServiceClient();
-            XElement events = new XElement("Events", epcis.GetEvents(fromIncl, toIncl, platsEPC));
+            XElement events = new XElement("Events");
+            XElement[] test;
+            try
+            {
+                test = epcis.GetEvents(fromIncl, toIncl, platsEPC);
+                foreach(XElement x in test){
+
+                }
+            }
+            catch (Exception e) { //return internal error
+                return events;
+            }
+            
             epcis.Close();
             return events;
 
