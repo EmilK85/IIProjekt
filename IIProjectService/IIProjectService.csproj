@@ -59,6 +59,7 @@
     <Reference Include="System.Xml.Linq" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="App_Data\Anvandare.xml" />
     <Content Include="FordonsPassageService.svc" />
     <Content Include="Properties\DataSources\System.Xml.Linq.XElement.datasource" />
     <None Include="Service References\IIServiceReference\IIService.disco" />
@@ -82,9 +83,7 @@
       <DependentUpon>Reference.svcmap</DependentUpon>
     </Compile>
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="App_Data\" />
-  </ItemGroup>
+  <ItemGroup />
   <ItemGroup>
     <None Include="Service References\IIServiceReference\IIService.wsdl" />
     <None Include="Service References\IIServiceReference\IIService.xsd">
