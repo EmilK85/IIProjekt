@@ -60,6 +60,9 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="App_Data\Anvandare.xml" />
+    <Content Include="App_Data\FelFordonData.xml">
+      <SubType>Designer</SubType>
+    </Content>
     <Content Include="FordonsPassageService.svc" />
     <Content Include="Properties\DataSources\System.Xml.Linq.XElement.datasource" />
     <None Include="Service References\IIServiceReference\IIService.disco" />

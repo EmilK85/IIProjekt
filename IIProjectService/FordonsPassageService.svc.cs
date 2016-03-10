@@ -35,6 +35,7 @@ namespace IIProjectService
             DateTime from = DateTime.Parse(fromIncl);
             string toIncl = förfrågan.Element("tidsintervall").Element("slut").Value;
             DateTime to = DateTime.Parse(toIncl);
+            DateTime förfråganTime = DateTime.Parse((string)förfrågan.Element("datetimeFörfrågan"));
 
             string platsEPC = förfrågan.Element("plats").Value;
             string plats = GetLocation((string)förfrågan.Element("plats")).Element("Location").Element("Name").Value;
@@ -97,7 +98,7 @@ namespace IIProjectService
                             new XElement("Fordonstyp", 
                                 from vehic in GetVehicle((string)evnt.Element("epcList").Element("epc")).Descendants("FordonsTyp")
                                 select (string)vehic.Element("FordonskategoriKodFullVardeSE")),
-                            new XElement("GiltigtGodkännande", "query under Godkannande (finns massa tänkta attribut, antingen FordonsgodkannandeFullVardeSE eller intervall"))));
+                            new XElement("GiltigtGodkännande", checkIfValid(förfråganTime, (string)evnt.Element("eventTime"))))));
 
             return svar;
         }
@@ -117,7 +118,15 @@ namespace IIProjectService
             IIServiceReference.NamingServiceClient master = new IIServiceReference.NamingServiceClient();
             XElement vehicle = master.GetVehicle(vehicleEPC);
             master.Close();
-            return vehicle;
+            if (!vehicle.Descendants("ResponseMessage").Any()) 
+            {
+                return vehicle;
+            }
+            else
+            {
+                XElement tempElement = XElement.Load(appDataFolder + "FelFordonData.xml");
+                return tempElement;
+            }
 
         }
 
@@ -139,16 +148,20 @@ namespace IIProjectService
             return dateTime.Substring(11, 5);
         }
 
-        private static IEnumerable<XElement> DescendantsOrEmpty(this XElement element, XName name)
+        private string checkIfValid(DateTime dateTime, string evetnTime)
         {
-            if(element != null)
+            DateTime dTime = DateTime.Parse(evetnTime);
+
+            if(dateTime < dTime)
             {
-                return element.Descendants(name);
+                string notValid = "Utanför tidsspann";
+                return notValid;
             }
 
             else
             {
-
+                string valid = "Innanför tidspannet";
+                return valid;
             }
         }
     }

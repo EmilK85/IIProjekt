@@ -22,6 +22,9 @@
             <th>
                 FordonEPC
             </th>
+            <th>
+                EVN
+            </th>
         </tr>
     </thead>
     <tbody>
@@ -39,6 +42,9 @@
                 </td>
                 <td>
                     @((string)item.Element("FordonEpc"))
+                </td>
+                <td>
+                    @((string)item.Element("FordonsData").Element("EVN"))
                 </td>
             </tr>
         }
