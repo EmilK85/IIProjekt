@@ -6,6 +6,7 @@ using System.ServiceModel;
 using System.ServiceModel.Web;
 using System.Text;
 using System.Xml.Linq;
+using System.Web.Hosting;
 
 namespace IIProjectService
 {
@@ -13,6 +14,7 @@ namespace IIProjectService
     // NOTE: In order to launch WCF Test Client for testing this service, please select Service1.svc or Service1.svc.cs at the Solution Explorer and start debugging.
     public class FordonsPassageService : IFordonsPassageService
     {
+        string appDataFolder = HostingEnvironment.MapPath("/App_Data/");
         //<förfrågan>
         //    <datetimeFörfrågan></datetimeFörfrågan>
         //    <anropsansvarig></anropsansvarig>
@@ -84,7 +86,8 @@ namespace IIProjectService
                     select new XElement("FordonsPassager",
                         new XElement("FordonEpc", (string)evnt.Element("epcList").Element("epc")),
                         new XElement("PlatsEPC", (string)evnt.Element("readPoint").Element("id")),
-                        new XElement("Tid", (string)evnt.Element("eventTime")),
+                        new XElement("Datum", GetDate((string)evnt.Element("eventTime"))),
+                        new XElement("Tid", GetTime((string)evnt.Element("eventTime"))),
                         new XElement("Plats", plats),
                         from vehicle in GetVehicle((string)evnt.Element("epcList").Element("epc")).Descendants("Fordonsindivider")
                         select  new XElement("FordonsData",
@@ -118,12 +121,35 @@ namespace IIProjectService
 
         }
 
-        private XElement GetLocation(string vehicleEPC)
+        private XElement GetLocation(string placeEPC)
         {
             IIServiceReference.NamingServiceClient master = new IIServiceReference.NamingServiceClient();
-            XElement location = master.GetLocation(vehicleEPC);
+            XElement location = master.GetLocation(placeEPC);
             master.Close();
             return location;
+        }
+
+        private string GetDate(string dateTime)
+        {
+            return dateTime.Substring(0, 10);
+        }
+
+        private string GetTime(string dateTime)
+        {
+            return dateTime.Substring(11, 5);
+        }
+
+        private static IEnumerable<XElement> DescendantsOrEmpty(this XElement element, XName name)
+        {
+            if(element != null)
+            {
+                return element.Descendants(name);
+            }
+
+            else
+            {
+
+            }
         }
     }
 }

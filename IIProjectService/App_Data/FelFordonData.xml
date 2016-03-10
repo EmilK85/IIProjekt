@@ -1,0 +1,22 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<root>
+<Fordonsindivider>
+  <FordonsIndivid >
+    <Fordonsnummer>Missing data</Fordonsnummer>
+    <SokandeForetag>Missing data</SokandeForetag>
+    <Fordonsinnehavare>
+      <Foretag>Missing data</Foretag>
+    </Fordonsinnehavare>
+    <UnderhallsansvarigtForetag>
+      <Foretag>Missing data</Foretag>
+    </UnderhallsansvarigtForetag>
+    <Godkannande>
+      <FordonsgodkannandeFullVardeSE>Missing data</FordonsgodkannandeFullVardeSE>
+      <FordonsgodkannandeFullVardeEN>Missing data</FordonsgodkannandeFullVardeEN>
+    </Godkannande>
+  </FordonsIndivid>
+</Fordonsindivider>
+<FordonsTyp>
+  <FordonskategoriKodFullVardeSE>Missing data</FordonskategoriKodFullVardeSE>
+</FordonsTyp>
+</root>
