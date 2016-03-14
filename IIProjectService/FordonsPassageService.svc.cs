@@ -171,8 +171,11 @@ namespace IIProjectService
                  *     </FordonsPassager>
                  * </Svar>
                  */
-
-                svar.Add(from evnt in events.Descendants("ObjectEvent")
+               // IEnumerable<string> godkännanden;
+                int antal = (int)förfrågan.Descendants("antal").FirstOrDefault();
+                int senastTagna = (int)förfrågan.Descendants("senastTagna").FirstOrDefault();
+                svar.Add(from evnt in events.Descendants("ObjectEvent").OrderBy(E=>(DateTime)E.Element("eventTime")).Skip(senastTagna).Take(antal)
+                         //orderby (DateTime)evnt.Element("eventTime")
                          select new XElement("FordonsPassager",
                              new XElement("FordonEpc", (string)evnt.Element("epcList").Element("epc")),
                              new XElement("PlatsEPC", (string)evnt.Element("readPoint").Element("id")),
@@ -182,12 +185,18 @@ namespace IIProjectService
                              from vehicle in GetVehicle((string)evnt.Element("epcList").Element("epc")).Descendants("Fordonsindivider")
                              select new XElement("FordonsData",
                                  new XElement("EVN", (string)vehicle.Element("FordonsIndivid").Element("Fordonsnummer")),
-                                 new XElement("Fordonsinnehavaren", (string)vehicle.Element("FordonsIndivid").Element("Fordonsinnehavare").Element("Foretag")),
-                                 new XElement("UnderhållsansvarigtFöretag", (string)vehicle.Element("FordonsIndivid").Element("UnderhallsansvarigtForetag").Element("Foretag")),
-                                 new XElement("Fordonstyp",
-                                     from vehic in GetVehicle((string)evnt.Element("epcList").Element("epc")).Descendants("FordonsTyp")
-                                     select (string)vehic.Element("FordonskategoriKodFullVardeSE")),
-                                 new XElement("GiltigtGodkännande", "query under Godkannande (finns massa tänkta attribut, antingen FordonsgodkannandeFullVardeSE eller intervall"))));
+                                 new XElement("Fordonsinnehavaren", (string)vehicle.Descendants("Fordonsinnehavare").FirstOrDefault().Element("Foretag")),
+                                 new XElement("UnderhållsansvarigtFöretag", (string)vehicle.Descendants("UnderhallsansvarigtForetag").FirstOrDefault().Element("Foretag")),
+                                 new XElement("Fordonstyp",(string) vehicle.Descendants("FordonskategoriKodFullVardeSE").FirstOrDefault()),
+                                 new XElement("Godkännande",
+                                     new XElement("Godkänd", (string)vehicle.Descendants("FordonsgodkannandeFullVardeSE").FirstOrDefault(),
+                                     new XElement("GodkändFrån", (string)vehicle.Descendants("GiltigtFrom").FirstOrDefault()),
+                                     new XElement("GodkändTill", (string)vehicle.Descendants("GiltigtTom").FirstOrDefault()))))));
+
+                //godkännanden = from godkännande  in svar.Descendants("Godkänd")
+                //               select (string)godkännande;
+
+                //godkännanden = godkännanden.Distinct();
 
                 return svar;
             }

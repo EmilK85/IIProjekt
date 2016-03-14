@@ -3,9 +3,15 @@
 
 @{
     ViewBag.Title = "Index";
+    ViewBag.Nextlink = "http://localhost:49949/" + (ViewBag.page +1);
 }
 
 <h2>Index</h2>
+
+@if(ViewBag.page != 1) { @Html.ActionLink("Föregående sida", "Index", new { page = (ViewBag.page - 1) }, null); }
+        Du är på sida @ViewBag.page
+@Html.ActionLink("Nästa sida", "Index", new { page = (ViewBag.page + 1) }, null)
+
 
 <table>
     <thead>
@@ -48,6 +54,8 @@
                 </td>
             </tr>
         }
+
+
     </tbody>
 </table>
 
