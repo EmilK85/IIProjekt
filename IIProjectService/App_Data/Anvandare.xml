@@ -5,4 +5,16 @@
     <namn>Amanda</namn>
     <losenord>hej</losenord>
   </anvandare>
+  <anvandare>
+    <namn>Emil</namn>
+    <losenord>hej</losenord>
+  </anvandare>
+  <anvandare>
+    <namn>Bruno</namn>
+    <losenord>hej</losenord>
+  </anvandare>
+  <anvandare>
+    <namn>Fredrik</namn>
+    <losenord>hej</losenord>
+  </anvandare>
 </anvandarlista>

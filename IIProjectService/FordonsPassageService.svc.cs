@@ -15,6 +15,7 @@ namespace IIProjectService
     public class FordonsPassageService : IFordonsPassageService
     {
         string appDataFolder = HostingEnvironment.MapPath("/App_Data/");
+
         //<förfrågan>
         //    <datetimeFörfrågan></datetimeFörfrågan>
         //    <anropsansvarig></anropsansvarig>
@@ -31,9 +32,9 @@ namespace IIProjectService
 
         private bool OkAnvändarnamn(string namn)
         {
-            string XMLFile = HostingEnvironment.MapPath(appDataFolder + "Anvandare.xml");
-            XElement anvandarlista = XElement.Load(XMLFile);
-
+           // string XMLFile = HostingEnvironment.MapPath(appDataFolder + "Anvandare.xml");
+          //  XElement anvandarlista = XElement.Load(XMLFile);
+            XElement anvandarlista = XElement.Load(appDataFolder + "Anvandare.xml");
             IEnumerable<string> matchande = from k in anvandarlista.Descendants("namn")
                                             where k.Value == namn
                                             select k.Value;
@@ -49,9 +50,15 @@ namespace IIProjectService
             }
         }
 
+        public XElement TestFunktion()
+        {
+            XElement testXml = new XElement("Test", "Test");
+            return testXml;
+        }
+
         public XElement HämtaFordonsPassager(XElement förfrågan)
         {
-            XElement svar = new XElement("Svar",
+           XElement svar= new XElement("Svar",
                 new XElement("Tjänstemeddelande",
                     new XElement("Svarsinformation",
                         new XElement("Svarskod", "1"),
@@ -61,16 +68,22 @@ namespace IIProjectService
                         new XElement("Tidpunkt", DateTime.Now)),
                     new XElement("Anropsinformation",
                         new XElement("Anropsansvarig", förfrågan.Element("anropsansvarig").Value),
-                        new XElement("Argument", förfrågan))
-                   )
-               );
-
+                        new XElement("Argument", förfrågan))));
+ 
             //kolla om inlogg är ok med metoden OkAnvändarnamn
-            if (!OkAnvändarnamn(förfrågan.Element("anropsansvarig").Value))
-            {
-                svar.Element("Svarskod").Value = "3";
-                svar.Element("Meddelande").Value = "Ogiltig användare";
-                return svar;
+            if(!OkAnvändarnamn(förfrågan.Element("anropsansvarig").Value)){
+                XElement svarTwo = new XElement("Svar",
+                    new XElement("Tjänstemeddelande",
+                        new XElement("Svarsinformation",
+                            new XElement("Svarskod", "2"),
+                            new XElement("Meddelande", "Ogiltig användare"),
+                            new XElement("Tjänsteansvarig", "Grymma gruppen AB"),
+                            new XElement("Applikationsnamn", "Grymma appen, Ver 1.0"),
+                            new XElement("Tidpunkt", DateTime.Now)),
+                            new XElement("Anropsinformation",
+                                new XElement("Anropsansvarig", förfrågan.Element("anropsansvarig").Value),
+                                new XElement("Argument", förfrågan))));
+                    return svarTwo;
             }
 
             try
@@ -110,11 +123,7 @@ namespace IIProjectService
                  *         <Fordonsinnehavaren>
                  *         <Underhållsansvarigt företag>
                  *         <Fordonstyp> (samt underkategori)
-                 *         <Godkannande>
-                 *             <Godkand></Godkand>
-                 *             <GodkandFran></GodkandFran>
-                 *             <GodkandTill></GodkandTill>
-                 *         </Godkannande>
+                 *         <Giltigt godkännande>
                  *     </FordonsPassager>
                  * </Svar>
                  */
@@ -156,46 +165,47 @@ namespace IIProjectService
                      *         <Fordonsinnehavaren>
                      *         <Underhållsansvarigt företag>
                      *         <Fordonstyp> (samt underkategori)
-                     *         <Godkannande>
-                 *                 <Godkand></Godkand>
-                 *                 <GodkandFran></GodkandFran>
-                 *                 <GodkandTill></GodkandTill>
-                 *             </Godkannande>
+                     *         <Giltigt godkännande>
                  *         <Fordonspassage>
                  *        
                  *     </FordonsPassager>
                  * </Svar>
                  */
 
-                //svar.Add(from evnt in events.Descendants("ObjectEvent")
-                //         select new XElement("FordonsPassager",
-                //             new XElement("FordonEpc", (string)evnt.Element("epcList").Element("epc")),
-                //             new XElement("PlatsEPC", (string)evnt.Element("readPoint").Element("id")),
-                //             new XElement("Datum", GetDate((string)evnt.Element("eventTime"))),
-                //             new XElement("Tid", GetTime((string)evnt.Element("eventTime"))),
-                //             new XElement("Plats", plats),
-                //             from vehicle in GetVehicle((string)evnt.Element("epcList").Element("epc")).Descendants()
-                //             select new XElement("FordonsData",
-                //                 new XElement("EVN", (string)vehicle.Descendants().First().Element("Fordonsnummer")),
-                //                 new XElement("Fordonsinnehavaren", (string)vehicle.Descendants("Fordonsinnehavare").First().Element("Foretag")),
-                //                 new XElement("UnderhållsansvarigtFöretag", (string)vehicle.Descendants("UnderhallsansvarigtForetag").First().Element("Foretag")),
-                //                 //new XElement("Fordonstyp", (string)vehicle.Descendants("FordonskategoriKodFullVardeSE").First()),
-                //                 new XElement("Godkannande",
-                //                     new XElement("Godkand"),
-                //                     new XElement("GodkandFran"),
-                //                     new XElement("GodkandTill")))));
+                svar.Add(from evnt in events.Descendants("ObjectEvent")
+                         select new XElement("FordonsPassager",
+                             new XElement("FordonEpc", (string)evnt.Element("epcList").Element("epc")),
+                             new XElement("PlatsEPC", (string)evnt.Element("readPoint").Element("id")),
+                             new XElement("Datum", GetDate((string)evnt.Element("eventTime"))),
+                             new XElement("Tid", GetTime((string)evnt.Element("eventTime"))),
+                             new XElement("Plats", plats),
+                             from vehicle in GetVehicle((string)evnt.Element("epcList").Element("epc")).Descendants("Fordonsindivider")
+                             select new XElement("FordonsData",
+                                 new XElement("EVN", (string)vehicle.Element("FordonsIndivid").Element("Fordonsnummer")),
+                                 new XElement("Fordonsinnehavaren", (string)vehicle.Element("FordonsIndivid").Element("Fordonsinnehavare").Element("Foretag")),
+                                 new XElement("UnderhållsansvarigtFöretag", (string)vehicle.Element("FordonsIndivid").Element("UnderhallsansvarigtForetag").Element("Foretag")),
+                                 new XElement("Fordonstyp",
+                                     from vehic in GetVehicle((string)evnt.Element("epcList").Element("epc")).Descendants("FordonsTyp")
+                                     select (string)vehic.Element("FordonskategoriKodFullVardeSE")),
+                                 new XElement("GiltigtGodkännande", "query under Godkannande (finns massa tänkta attribut, antingen FordonsgodkannandeFullVardeSE eller intervall"))));
 
                 return svar;
             }
             catch
             {
-                svar.Element("Svarskod").Value = "2";
-                svar.Element("Meddelande").Value = "Internt fel";
-                return svar;
-            
+                XElement svarThree = new XElement("Svar",
+                    new XElement("Tjänstemeddelande",
+                        new XElement("Svarsinformation",
+                            new XElement("Svarskod", "3"),
+                            new XElement("Meddelande", "Internt fel"),
+                            new XElement("Tjänsteansvarig", "Grymma gruppen AB"),
+                            new XElement("Applikationsnamn", "Grymma appen, Ver 1.0"),
+                            new XElement("Tidpunkt", DateTime.Now)),
+                            new XElement("Anropsinformation",
+                                new XElement("Anropsansvarig", förfrågan.Element("anropsansvarig").Value),
+                                new XElement("Argument", förfrågan))));
+                return svarThree;
             }
-
-            return svar;
         }
 
         private XElement GetEvents(DateTime fromIncl, DateTime toIncl, string platsEPC)

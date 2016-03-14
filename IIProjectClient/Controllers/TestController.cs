@@ -40,6 +40,7 @@ namespace IIProjectClient.Controllers
                     new XElement("antal", "randomNummer"),
                     new XElement("senastTagna", "randomNummer")));
             XElement svar = client.HämtaFordonsPassager(förfrågan);
+            //XElement svar = client.TestFunktion();
             return View(svar);
         }
     }

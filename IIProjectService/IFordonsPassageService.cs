@@ -17,6 +17,9 @@ namespace IIProjectService
         [OperationContract]
         XElement HämtaFordonsPassager(XElement förfrågan);
 
+        [OperationContract]
+        XElement TestFunktion();
+
         // TODO: Add your service operations here
     }
 }
