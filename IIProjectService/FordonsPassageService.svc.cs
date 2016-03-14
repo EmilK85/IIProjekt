@@ -93,85 +93,12 @@ namespace IIProjectService
                 string toIncl = förfrågan.Element("tidsintervall").Element("slut").Value;
                 DateTime to = DateTime.Parse(toIncl);
 
-                string platsEPC = förfrågan.Element("plats").Value;
-                string plats = GetLocation((string)förfrågan.Element("plats")).Element("Location").Element("Name").Value;
-
+                string platsNamnSök = förfrågan.Element("plats").Value;
+                string platsEPC = GetEPCOfCity(platsNamnSök);
+                string platsNamnFrånClient = GetLocation(platsEPC).Element("Location").Element("Name").Value;
                 XElement events = GetEvents(from, to, platsEPC);
 
-                /* SVARET
-                 *
-                 * <Svar>
-                 *     <Tjänstemeddelande>
-                 *         <Svarsinformation>
-                 *             <Svarskod>
-                 *             <Meddelande>
-                 *             <Tjänsteansvarig>
-                 *             <Applikationsnamn och version>
-                 *             <Tidpunkt för svaret>
-                 *         </Svarsinformation>
-                 *         <Anropsinformation>
-                 *             <Anropsansvarig>
-                 *             <Argument som skickades med anropet>
-                 *         </Anropsinformation>
-                 *     </Tjänstemeddelande>
-                 *     <FordonsPassager>
-                 *         <Fordonets epc>
-                 *         <Platsens EPC>
-                 *         <Tid> (för eventet)
-                 *         <Plats>
-                 *         <EVN> (European Vehicle Number)
-                 *         <Fordonsinnehavaren>
-                 *         <Underhållsansvarigt företag>
-                 *         <Fordonstyp> (samt underkategori)
-                 *         <Giltigt godkännande>
-                 *     </FordonsPassager>
-                 * </Svar>
-                 */
 
-                /* SVARET
-                 *
-                 * <Svar>
-                 *     <Tjänstemeddelande>
-                 *         <Svarsinformation>
-                 *             <Svarskod>
-                 *             <Meddelande>
-                 *             <Tjänsteansvarig>
-                 *             <Applikationsnamn och version>
-                 *             <Tidpunkt för svaret>
-                 *         </Svarsinformation>
-                 *         <Anropsinformation>
-                 *             <Anropsansvarig>
-                 *             <Argument som skickades med anropet>
-                 *         </Anropsinformation>
-                 *     </Tjänstemeddelande>
-                 *     <FordonsPassager>
-                     *      <Fordonspassage>
-                     *         <Fordonets epc>
-                     *         <Platsens EPC>
-                     *         <Tid> (för eventet)
-                     *         <Plats>
-                     *         <EVN> (European Vehicle Number)
-                     *         <Fordonsinnehavaren>
-                     *         <Underhållsansvarigt företag>
-                     *         <Fordonstyp> (samt underkategori)
-                     *         <Giltigt godkännande>
-                 *         <Fordonspassage>
-                 *         <Fordonspassage>
-                     *         <Fordonets epc>
-                     *         <Platsens EPC>
-                     *         <Tid> (för eventet)
-                     *         <Plats>
-                     *         <EVN> (European Vehicle Number)
-                     *         <Fordonsinnehavaren>
-                     *         <Underhållsansvarigt företag>
-                     *         <Fordonstyp> (samt underkategori)
-                     *         <Giltigt godkännande>
-                 *         <Fordonspassage>
-                 *        
-                 *     </FordonsPassager>
-                 * </Svar>
-                 */
-               // IEnumerable<string> godkännanden;
                 int antal = (int)förfrågan.Descendants("antal").FirstOrDefault();
                 int senastTagna = (int)förfrågan.Descendants("senastTagna").FirstOrDefault();
                
@@ -183,7 +110,7 @@ namespace IIProjectService
                              new XElement("PlatsEPC", (string)evnt.Element("readPoint").Element("id")),
                              new XElement("Datum", GetDate((string)evnt.Element("eventTime"))),
                              new XElement("Tid", GetTime((string)evnt.Element("eventTime"))),
-                             new XElement("Plats", plats),
+                             new XElement("Plats", platsNamnFrånClient),
                            //GetVehicle2((string)evnt.Element("epcList").Element("epc"))));
                              from vehicle in GetVehicle((string)evnt.Element("epcList").Element("epc")).DescendantsAndSelf("ResponseFordonsindivid")
                              where vehicle.Descendants("ResponseMessage").Any() == false
@@ -196,11 +123,6 @@ namespace IIProjectService
                                      new XElement("Godkänd", (string)vehicle.Descendants("FordonsgodkannandeFullVardeSE").FirstOrDefault()),
                                      new XElement("GodkändFrån", (string)vehicle.Descendants("GiltigtFrom").FirstOrDefault()),
                                      new XElement("GodkändTill", (string)vehicle.Descendants("GiltigtTom").FirstOrDefault())))));
-
-                //godkännanden = from godkännande  in svar.Descendants("Godkänd")
-                //               select (string)godkännande;
-
-                //godkännanden = godkännanden.Distinct();
 
                 return svar;
             }
@@ -249,6 +171,17 @@ namespace IIProjectService
 
 
 
+
+        }
+
+        private string GetEPCOfCity(string cityName)
+        {
+            IIServiceReference.INamingService names = new IIServiceReference.NamingServiceClient();
+            IEnumerable<string> epc = from location in names.GetAllLocations().Descendants("Location")
+                              where ((string)location.Element("Name")).ToLower().Contains(cityName.ToLower())
+                              select (string)location.Element("Epc");
+
+            return epc.FirstOrDefault();
 
         }
 

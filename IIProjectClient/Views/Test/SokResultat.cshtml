@@ -1,0 +1,117 @@
+﻿@using System.Xml.Linq
+@model XElement
+
+@{
+    ViewBag.Title = "Index";
+    ViewBag.Nextlink = "http://localhost:49949/" + (ViewBag.page + 1);
+}
+
+<h2>Index</h2>
+
+@if (ViewBag.page != 1)
+{ @Html.ActionLink("Föregående sida", "Sokning", new { sökning = Model, page = (ViewBag.page - 1) }, null);
+}
+        Du är på sida @ViewBag.page
+        @Html.ActionLink("Nästa sida", "Sokning", new { page = (ViewBag.page + 1) }, null)
+
+
+        <table>
+            <thead>
+                <tr>
+                    <th>
+                        Plats
+                    </th>
+                    <th>
+                        Datum
+                    </th>
+                    <th>
+                        Tid
+                    </th>
+                    <th>
+                        EVN
+                    </th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model.Descendants("FordonsPassager"))
+                {
+                    <tr>
+                        <td>
+                            @((string)item.Element("Plats"))
+                        </td>
+                        <td>
+                            @((string)item.Element("Datum"))
+                        </td>
+                        <td>
+                            @((string)item.Element("Tid"))
+                        </td>
+                        <td>
+                            @if ((string)item.Element("FordonsData") != null)
+                            {
+                                @((string)item.Element("FordonsData").Element("EVN"))
+                            }
+                        </td>
+                        <td>
+                            <input type="button" class="showHideBtn" value="Visa/Dölj" />
+
+                            <table class="showHide">
+                                <tbody>
+                                    @if ((string)item.Element("FordonsData") != null)
+                                    {
+                                        <tr>
+                                            <th>EPC</th>
+                                            <td> @((string)item.Element("FordonEpc"))</td>
+                                        </tr>
+                                        <tr>
+                                            <th>Innehavare</th>
+                                            <td> @((string)item.Element("FordonsData").Element("Fordonsinnehavaren"))</td>
+                                        </tr>
+                                        <tr>
+                                            <th>Ansvariga</th>
+                                            <td> @((string)item.Element("FordonsData").Element("UnderhållsansvarigtFöretag"))</td>
+                                        </tr>
+                                        <tr>
+                                            <th>Typ</th>
+                                            <td> @((string)item.Element("FordonsData").Element("Fordonstyp"))</td>
+                                        </tr>
+                                        <tr>
+                                            <th>Godkänd</th>
+                                            <td> @((string)item.Element("FordonsData").Descendants("Godkänd").FirstOrDefault())</td>
+                                        </tr>
+                                    }
+                                    else
+                                    {
+                                        <tr>
+                                            <th>Ingen data</th>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+
+        <script type="text/javascript" src="~/Scripts/jquery-1.8.2.js"></script>
+        <script>
+    $('.showHide').hide();
+    $('.showHideBtn').on('click', function (e) {
+        console.log("lol");
+        e.preventDefault();
+        var individ = $(this).next('.showHide')
+        individ.toggle();
+    });
+
+    $(document).ready(function () {
+        setMaxWidth();
+        $(window).bind('resize', setMaxWidth); //Remove this if it's not needed. It will react when window changes size.
+
+        function setMaxWidth() {
+            $('.content-wrapper').css('maxWidth', ($(window).width() * 0.8 | 0) + 'px');
+        }
+
+    });
+        </script>
+
