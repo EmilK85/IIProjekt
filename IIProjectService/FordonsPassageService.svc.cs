@@ -174,20 +174,24 @@ namespace IIProjectService
                // IEnumerable<string> godkännanden;
                 int antal = (int)förfrågan.Descendants("antal").FirstOrDefault();
                 int senastTagna = (int)förfrågan.Descendants("senastTagna").FirstOrDefault();
+               
+                
                 svar.Add(from evnt in events.Descendants("ObjectEvent").OrderBy(E=>(DateTime)E.Element("eventTime")).Skip(senastTagna).Take(antal)
-                         //orderby (DateTime)evnt.Element("eventTime")
+
                          select new XElement("FordonsPassager",
                              new XElement("FordonEpc", (string)evnt.Element("epcList").Element("epc")),
                              new XElement("PlatsEPC", (string)evnt.Element("readPoint").Element("id")),
                              new XElement("Datum", GetDate((string)evnt.Element("eventTime"))),
                              new XElement("Tid", GetTime((string)evnt.Element("eventTime"))),
                              new XElement("Plats", plats),
-                             from vehicle in GetVehicle((string)evnt.Element("epcList").Element("epc")).Descendants("Fordonsindivider")
+                           //GetVehicle2((string)evnt.Element("epcList").Element("epc"))));
+                             from vehicle in GetVehicle((string)evnt.Element("epcList").Element("epc")).DescendantsAndSelf("ResponseFordonsindivid")
+                           //  where vehicle.Descendants("ResponseMessage").Any() == false
                              select new XElement("FordonsData",
-                                 new XElement("EVN", (string)vehicle.Element("FordonsIndivid").Element("Fordonsnummer")),
+                                 new XElement("EVN", (string)vehicle.Descendants("Fordonsnummer").FirstOrDefault()),
                                  new XElement("Fordonsinnehavaren", (string)vehicle.Descendants("Fordonsinnehavare").FirstOrDefault().Element("Foretag")),
                                  new XElement("UnderhållsansvarigtFöretag", (string)vehicle.Descendants("UnderhallsansvarigtForetag").FirstOrDefault().Element("Foretag")),
-                                 new XElement("Fordonstyp",(string) vehicle.Descendants("FordonskategoriKodFullVardeSE").FirstOrDefault()),
+                                 new XElement("Fordonstyp", (string)vehicle.Descendants("FordonskategoriKodFullVardeSE").FirstOrDefault()),
                                  new XElement("Godkännande",
                                      new XElement("Godkänd", (string)vehicle.Descendants("FordonsgodkannandeFullVardeSE").FirstOrDefault(),
                                      new XElement("GodkändFrån", (string)vehicle.Descendants("GiltigtFrom").FirstOrDefault()),
@@ -217,6 +221,37 @@ namespace IIProjectService
             }
         }
 
+        private XElement GetVehicle2(string vehicleEPC)
+        {
+
+            IIServiceReference.NamingServiceClient master = new IIServiceReference.NamingServiceClient();
+            XElement vehicle = master.GetVehicle(vehicleEPC);
+            master.Close();
+
+            if (vehicle.Descendants("ResponseMessage").Any())
+            {
+                return null;
+            }
+            else
+            {
+                return new XElement("FordonsData",
+                                 new XElement("EVN", (string)vehicle.Descendants("FordonsIndivid").FirstOrDefault().Element("Fordonsnummer")),
+                                 new XElement("Fordonsinnehavaren", (string)vehicle.Descendants("Fordonsinnehavare").FirstOrDefault().Element("Foretag")),
+                                 new XElement("UnderhållsansvarigtFöretag", (string)vehicle.Descendants("UnderhallsansvarigtForetag").FirstOrDefault().Element("Foretag")),
+                                 new XElement("Fordonstyp", (string)vehicle.Descendants("FordonskategoriKodFullVardeSE").FirstOrDefault()),
+                                 new XElement("Godkännande",
+                                     new XElement("Godkänd", (string)vehicle.Descendants("FordonsgodkannandeFullVardeSE").FirstOrDefault(),
+                                     new XElement("GodkändFrån", (string)vehicle.Descendants("GiltigtFrom").FirstOrDefault()),
+                                     new XElement("GodkändTill", (string)vehicle.Descendants("GiltigtTom").FirstOrDefault()))));
+
+            }
+
+
+
+
+
+        }
+
         private XElement GetEvents(DateTime fromIncl, DateTime toIncl, string platsEPC)
         {
             IIServiceReference.EpcisEventServiceClient epcis = new IIServiceReference.EpcisEventServiceClient();
@@ -232,15 +267,16 @@ namespace IIProjectService
             IIServiceReference.NamingServiceClient master = new IIServiceReference.NamingServiceClient();
             XElement vehicle = master.GetVehicle(vehicleEPC);
             master.Close();
-            if (!vehicle.Descendants("ResponseMessage").Any()) 
-            {
-                return vehicle;
-            }
-            else
-            {
-                XElement tempElement = XElement.Load(appDataFolder + "FelFordonData.xml");
-                return tempElement;
-            }
+            return vehicle;
+            //if (!vehicle.Descendants("ResponseMessage").Any()) 
+            //{
+            //    return vehicle;
+            //}
+            //else
+            //{
+            //    XElement tempElement = XElement.Load(appDataFolder + "FelFordonData.xml");
+            //    return tempElement;
+            //}
 
         }
 

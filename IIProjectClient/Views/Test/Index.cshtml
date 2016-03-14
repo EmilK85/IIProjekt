@@ -31,6 +31,18 @@
             <th>
                 EVN
             </th>
+            <th>
+                Innehavare
+            </th>
+            <th>
+                Underhållsansvarig
+            </th>
+            <th>
+                Fordonstyp
+            </th>
+            <th>
+                Godkänd
+            </th>
         </tr>
     </thead>
     <tbody>
@@ -49,9 +61,19 @@
                 <td>
                     @((string)item.Element("FordonEpc"))
                 </td>
-                <td>
-                    @((string)item.Element("FordonsData").Element("EVN"))
-                </td>
+
+                @if((string)item.Element("FordonsData") != null)
+                {
+                    
+                    <td> @((string)item.Element("FordonsData").Element("EVN"))</td>
+                    <td> @((string)item.Element("FordonsData").Element("Fordonsinnehavaren"))</td>
+                    <td> @((string)item.Element("FordonsData").Element("UnderhållsansvarigtFöretag"))</td>
+                    <td> @((string)item.Element("FordonsData").Element("Fordonstyp"))</td>
+                    <td> @((string)item.Element("FordonsData").Descendants("Godkänd").FirstOrDefault())</td>
+
+
+                }
+                    
             </tr>
         }
 
