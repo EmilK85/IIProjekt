@@ -186,16 +186,16 @@ namespace IIProjectService
                              new XElement("Plats", plats),
                            //GetVehicle2((string)evnt.Element("epcList").Element("epc"))));
                              from vehicle in GetVehicle((string)evnt.Element("epcList").Element("epc")).DescendantsAndSelf("ResponseFordonsindivid")
-                           //  where vehicle.Descendants("ResponseMessage").Any() == false
+                             where vehicle.Descendants("ResponseMessage").Any() == false
                              select new XElement("FordonsData",
                                  new XElement("EVN", (string)vehicle.Descendants("Fordonsnummer").FirstOrDefault()),
                                  new XElement("Fordonsinnehavaren", (string)vehicle.Descendants("Fordonsinnehavare").FirstOrDefault().Element("Foretag")),
                                  new XElement("UnderhållsansvarigtFöretag", (string)vehicle.Descendants("UnderhallsansvarigtForetag").FirstOrDefault().Element("Foretag")),
                                  new XElement("Fordonstyp", (string)vehicle.Descendants("FordonskategoriKodFullVardeSE").FirstOrDefault()),
                                  new XElement("Godkännande",
-                                     new XElement("Godkänd", (string)vehicle.Descendants("FordonsgodkannandeFullVardeSE").FirstOrDefault(),
+                                     new XElement("Godkänd", (string)vehicle.Descendants("FordonsgodkannandeFullVardeSE").FirstOrDefault()),
                                      new XElement("GodkändFrån", (string)vehicle.Descendants("GiltigtFrom").FirstOrDefault()),
-                                     new XElement("GodkändTill", (string)vehicle.Descendants("GiltigtTom").FirstOrDefault()))))));
+                                     new XElement("GodkändTill", (string)vehicle.Descendants("GiltigtTom").FirstOrDefault())))));
 
                 //godkännanden = from godkännande  in svar.Descendants("Godkänd")
                 //               select (string)godkännande;

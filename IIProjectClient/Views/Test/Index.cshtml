@@ -26,22 +26,7 @@
                 Tid
             </th>
             <th>
-                FordonEPC
-            </th>
-            <th>
                 EVN
-            </th>
-            <th>
-                Innehavare
-            </th>
-            <th>
-                Underhållsansvarig
-            </th>
-            <th>
-                Fordonstyp
-            </th>
-            <th>
-                Godkänd
             </th>
         </tr>
     </thead>
@@ -59,26 +44,72 @@
                     @((string)item.Element("Tid"))
                 </td>
                 <td>
-                    @((string)item.Element("FordonEpc"))
+                    @if((string)item.Element("FordonsData") != null)
+                    {
+                        @((string)item.Element("FordonsData").Element("EVN"))
+                    }
                 </td>
+                <td>
+                    <input type="button" class="showHideBtn" value="Visa/Dölj" />
 
-                @if((string)item.Element("FordonsData") != null)
-                {
-                    
-                    <td> @((string)item.Element("FordonsData").Element("EVN"))</td>
-                    <td> @((string)item.Element("FordonsData").Element("Fordonsinnehavaren"))</td>
-                    <td> @((string)item.Element("FordonsData").Element("UnderhållsansvarigtFöretag"))</td>
-                    <td> @((string)item.Element("FordonsData").Element("Fordonstyp"))</td>
-                    <td> @((string)item.Element("FordonsData").Descendants("Godkänd").FirstOrDefault())</td>
+                    <table class="showHide">
+                        <tbody>
+                            @if ((string)item.Element("FordonsData") != null)
+                            {
+                                <tr>
+                                    <th>EPC</th>
+                                    <td> @((string)item.Element("FordonEpc"))</td>
+                                </tr>
+                                <tr>
+                                    <th>Innehavare</th>
+                                    <td> @((string)item.Element("FordonsData").Element("Fordonsinnehavaren"))</td>
+                                </tr>
+                                <tr>
+                                    <th>Ansvariga</th>
+                                    <td> @((string)item.Element("FordonsData").Element("UnderhållsansvarigtFöretag"))</td>
+                                </tr>
+                                <tr>
+                                    <th>Typ</th>
+                                    <td> @((string)item.Element("FordonsData").Element("Fordonstyp"))</td>
+                                </tr>
+                                <tr>
+                                    <th>Godkänd</th>
+                                    <td> @((string)item.Element("FordonsData").Descendants("Godkänd").FirstOrDefault())</td>
+                                </tr>
+                            }
+                            else
+                            {
+                                <tr>
+                                    <th>Ingen data</th>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
 
-
-                }
-                    
+                </td>    
             </tr>
         }
-
-
     </tbody>
 </table>
 
+<script type="text/javascript" src="~/Scripts/jquery-1.8.2.js"></script>
+<script>
+    $('.showHide').hide();
+    $('.showHideBtn').on('click', function (e) {
+        console.log("lol");
+        e.preventDefault();
+        var individ = $(this).next('.showHide')
+        individ.toggle();
+    });
+
+    $(document).ready(function () {
+        setMaxWidth();
+        $(window).bind('resize', setMaxWidth); //Remove this if it's not needed. It will react when window changes size.
+
+        function setMaxWidth() {
+            $('.content-wrapper').css('maxWidth', ($(window).width() * 0.8 | 0) + 'px');
+        }
+
+    });
+</script>
 
